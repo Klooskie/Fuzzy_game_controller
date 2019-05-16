@@ -5,8 +5,11 @@ import pygame
 
 
 class Obstacle:
-    def __init__(self, surface_width):
-        self.x = randint(0, surface_width)
+    def __init__(self, surface_width, x=-1):
+        if x == -1:
+            self.x = randint(0, surface_width)
+        else:
+            self.x = x
         self.y = randint(-500, -50)
         if randint(1, 15) == 1:
             self.speed = 2
@@ -39,7 +42,7 @@ def main():
     surface_height = 600
     player = Player(surface_width // 2, surface_height - 20)
     obstacles = []
-    max_obstacles = 55
+    max_obstacles = 60
     score = 0
     best_score = 0
 
@@ -50,8 +53,7 @@ def main():
     fail_font = pygame.font.SysFont("arial", 100)
 
     surface = pygame.display.set_mode((surface_width, surface_height), pygame.HWSURFACE)
-
-    # player_pic = pygame.image.load("pygame.png").convert()
+    player_avatar = pygame.image.load("player_avatar.png").convert()
 
     while running:
         for event in pygame.event.get():
@@ -59,13 +61,15 @@ def main():
                 running = False
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            player.move_left()
-        if keys[pygame.K_RIGHT]:
-            player.move_right(surface_width)
+        # if keys[pygame.K_LEFT]:
+        #     player.move_left()
+        # if keys[pygame.K_RIGHT]:
+        #     player.move_right(surface_width)
         if keys[pygame.K_ESCAPE]:
             running = False
         if keys[pygame.K_SPACE]:
+            controller.display_charts()
+        if keys[pygame.K_r]:
             score = 0
             obstacles = []
             player.x = surface_width // 2
@@ -118,14 +122,13 @@ def main():
         else:
             closest_wall_distance = surface_width - player.x
 
-        print("First: " + str(first_closest_x_distance) + " Second: " + str(second_closest_x_distance) + " Wall: "
-              + str(closest_wall_distance))
         move = controller.calculate_move(first_closest_x_distance, second_closest_x_distance, closest_wall_distance)
-        print(move)
+        # print("First: " + str(first_closest_x_distance) + " Second: " + str(second_closest_x_distance) + " Wall: " + str(closest_wall_distance))
+        # print(move)
 
-        if move < -0.3:
+        if move < -0.2:
             player.move_left()
-        elif move > 0.3:
+        elif move > 0.2:
             player.move_right(surface_width)
 
         for i, obstacle in enumerate(obstacles):
@@ -137,14 +140,17 @@ def main():
         if len(obstacles) < max_obstacles:
             if randint(1, 15) == 1:
                 obstacles.append(Obstacle(surface_width))
+            elif randint(1, 250) == 1:
+                obstacles.append(Obstacle(surface_width, randint(0, 20)))
+            elif randint(1, 250) == 1:
+                obstacles.append(Obstacle(surface_width, randint(surface_width - 20, surface_width)))
 
         # render
         surface.fill((0, 0, 0))
-        # surface.blit(player_pic, (player.x, player.y))
-        pygame.draw.circle(surface, (255, 0, 0), (player.x, player.y), player.radius)
+        # pygame.draw.circle(surface, (255, 0, 0), (player.x, player.y), player.radius)
+        surface.blit(player_avatar, (player.x - player.radius, player.y - player.radius))
         for obstacle in obstacles:
             pygame.draw.circle(surface, (0, 0, 255), (obstacle.x, obstacle.y), obstacle.radius)
-
         score_text = score_font.render("Score: " + str(score), False, (192, 192, 192))
         best_score_text = score_font.render("Best score: " + str(best_score), False, (192, 192, 192))
         surface.blit(score_text, (0, 0))
