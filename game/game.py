@@ -126,6 +126,17 @@ def main():
         # print("First: " + str(first_closest_x_distance) + " Second: " + str(second_closest_x_distance) + " Wall: " + str(closest_wall_distance))
         # print(move)
 
+        # if move < -0.6:
+        #     player.move_left()
+        #     player.move_left()
+        # elif move > -0.6 and move < -0.2:
+        #     player.move_left()
+        # elif move > 0.2 and move < 0.6:
+        #     player.move_right(surface_width)
+        # elif move > 0.6:
+        #     player.move_right(surface_width)
+        #     player.move_right(surface_width)
+
         if move < -0.2:
             player.move_left()
         elif move > 0.2:
